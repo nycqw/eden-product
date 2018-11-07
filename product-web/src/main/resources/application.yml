@@ -1,0 +1,53 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: eden-product
+  datasource:
+    name: eden
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      driver-class-name: com.mysql.jdbc.Driver
+      url: jdbc:mysql://106.14.187.183:3306/eden
+      username: root
+      password: Slc13092271475@
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3600
+      cache-null-values: false
+  redis:
+    database: 0
+    host: 106.14.187.183
+    port: 6379
+    password:
+    timeout: 10000
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: -1
+        max-idle: 5
+        min-idle: 0
+
+mybatis:
+  mapper-locations: classpath:mybatis/mapper/*.xml
+
+pagehelper:
+  offset-as-page-num: true
+  row-bounds-with-count: true
+  reasonable: true
+
+dubbo:
+  application:
+    name: product-service
+  protocol:
+    name: dubbo
+    port: 20880
+  registry:
+    address: zookeeper://106.14.187.183:2181
+  provider:
+    timeout: 1000
+    retries: 2
+    loadbalance: roundrobin
+
