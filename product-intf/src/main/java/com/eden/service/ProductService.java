@@ -1,6 +1,6 @@
 package com.eden.service;
 
-import model.TProduct;
+import com.eden.model.TProduct;
 
 public interface ProductService {
 

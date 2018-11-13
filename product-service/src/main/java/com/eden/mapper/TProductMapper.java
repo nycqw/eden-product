@@ -1,6 +1,6 @@
 package com.eden.mapper;
 
-import model.TProduct;
+import com.eden.model.TProduct;
 
 public interface TProductMapper {
     int deleteByPrimaryKey(Long productId);

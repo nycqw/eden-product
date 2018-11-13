@@ -1,22 +1,33 @@
 package com.eden.controller;
 
 import com.eden.service.ProductService;
-import com.eden.util.Result;
+import com.eden.domain.result.Result;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import model.TProduct;
+import com.eden.model.TProduct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.validation.Valid;
 
 /**
  * @author chenqw
  * @date 2018/11/3
  */
 @Slf4j
+@Validated
 @Controller
 @RequestMapping("/product")
-public class ProductController {
+public class ProductController implements ApplicationContextAware {
+
+    @Setter
+    private ApplicationContext applicationContext;
 
     @Autowired
     private ProductService productService;
@@ -30,8 +41,9 @@ public class ProductController {
 
     @RequestMapping("/save")
     @ResponseBody
-    public Result saveProductInfo(TProduct productInfo) {
+    public Result saveProductInfo(@RequestBody @Valid TProduct productInfo) {
         productService.saveProductInfo(productInfo);
         return Result.success();
     }
+
 }

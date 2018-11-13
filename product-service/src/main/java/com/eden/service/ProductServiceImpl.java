@@ -2,7 +2,7 @@ package com.eden.service;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.eden.mapper.TProductMapper;
-import model.TProduct;
+import com.eden.model.TProduct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 
