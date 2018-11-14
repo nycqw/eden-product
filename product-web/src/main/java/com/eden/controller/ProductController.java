@@ -18,16 +18,14 @@ import javax.validation.Valid;
 
 /**
  * @author chenqw
- * @date 2018/11/3
+ * @since  2018/11/3
  */
+
 @Slf4j
 @Validated
 @Controller
 @RequestMapping("/product")
-public class ProductController implements ApplicationContextAware {
-
-    @Setter
-    private ApplicationContext applicationContext;
+public class ProductController {
 
     @Autowired
     private ProductService productService;

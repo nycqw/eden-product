@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.eden.mapper.TServiceLogMapper" >
+  <resultMap id="BaseResultMap" type="com.eden.model.TServiceLog" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="ip" property="ip" jdbcType="VARCHAR" />
+    <result column="class_name" property="className" jdbcType="VARCHAR" />
+    <result column="method_name" property="methodName" jdbcType="VARCHAR" />
+    <result column="in_param" property="inParam" jdbcType="VARCHAR" />
+    <result column="out_param" property="outParam" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, url, ip, class_name, method_name, in_param, out_param, status, create_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_service_log
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey"  parameterType="java.lang.Long" >
+    delete from t_service_log
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id"  parameterType="com.eden.model.TServiceLog" >
+    insert into t_service_log (id, url, ip, class_name, 
+      method_name, in_param, out_param, 
+      status, create_time)
+    values (#{id,jdbcType=BIGINT}, #{url,jdbcType=VARCHAR}, #{ip,jdbcType=VARCHAR}, #{className,jdbcType=VARCHAR}, 
+      #{methodName,jdbcType=VARCHAR}, #{inParam,jdbcType=VARCHAR}, #{outParam,jdbcType=VARCHAR}, 
+      #{status,jdbcType=TINYINT}, #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.eden.model.TServiceLog" >
+    insert into t_service_log
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="url != null" >
+        url,
+      </if>
+      <if test="ip != null" >
+        ip,
+      </if>
+      <if test="className != null" >
+        class_name,
+      </if>
+      <if test="methodName != null" >
+        method_name,
+      </if>
+      <if test="inParam != null" >
+        in_param,
+      </if>
+      <if test="outParam != null" >
+        out_param,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="url != null" >
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="ip != null" >
+        #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="className != null" >
+        #{className,jdbcType=VARCHAR},
+      </if>
+      <if test="methodName != null" >
+        #{methodName,jdbcType=VARCHAR},
+      </if>
+      <if test="inParam != null" >
+        #{inParam,jdbcType=VARCHAR},
+      </if>
+      <if test="outParam != null" >
+        #{outParam,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.eden.model.TServiceLog" >
+    update t_service_log
+    <set >
+      <if test="url != null" >
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="ip != null" >
+        ip = #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="className != null" >
+        class_name = #{className,jdbcType=VARCHAR},
+      </if>
+      <if test="methodName != null" >
+        method_name = #{methodName,jdbcType=VARCHAR},
+      </if>
+      <if test="inParam != null" >
+        in_param = #{inParam,jdbcType=VARCHAR},
+      </if>
+      <if test="outParam != null" >
+        out_param = #{outParam,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.eden.model.TServiceLog" >
+    update t_service_log
+    set url = #{url,jdbcType=VARCHAR},
+      ip = #{ip,jdbcType=VARCHAR},
+      class_name = #{className,jdbcType=VARCHAR},
+      method_name = #{methodName,jdbcType=VARCHAR},
+      in_param = #{inParam,jdbcType=VARCHAR},
+      out_param = #{outParam,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

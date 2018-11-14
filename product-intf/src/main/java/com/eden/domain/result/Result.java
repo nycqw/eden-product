@@ -26,6 +26,10 @@ public class Result<T> {
         return new Result(ResultEnum.SUCCESS.getCode(), message, data);
     }
 
+    public static <T> Result<T> fail(String message){
+        return fail(ResultEnum.SYSTEM_ERROR.getCode(), message, null);
+    }
+
     public static <T> Result<T> fail(Integer code, String message){
         return fail(code, message, null);
     }

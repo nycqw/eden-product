@@ -13,7 +13,7 @@ public class TProduct {
     @NotNull(message = "不能为空")
     private Long productId;
 
-    @NotEmpty(message = "不能为空值")
+    @NotEmpty(message = "不能为空")
     private String productName;
 
     private Byte productCategory;

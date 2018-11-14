@@ -207,3 +207,12 @@
     1、事物分类：声明式事物、编程式事物
     2、原理：Spring Aop 的环绕通知来实现
     3、注意：Springboot中默认开启，使用时业务代码不要处理异常直接抛出                                                                                                                                                                                             
+
+## 集成AOP
+    1、引入依赖
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-aop</artifactId>
+    </dependency>
+    2、开启切面自动代理：@EnableAspectJAutoProxy
+    3、定义切面：@Aspect、@PointCut、@Before、@After、@Around、@AfterReturning、@AfterThrowing

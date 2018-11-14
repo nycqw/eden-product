@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
 <generatorConfiguration>
-    <classPathEntry  location="E:/maven/repository/mysql/mysql-connector-java/5.1.46/mysql-connector-java-5.1.46.jar"/>
+    <classPathEntry  location="F:\Maven\localRepository\mysql\mysql-connector-java\5.1.45\mysql-connector-java-5.1.45.jar"/>
     <context id="DB2Tables"  targetRuntime="MyBatis3">
         <!-- 注释配置 -->
         <commentGenerator>
@@ -39,6 +39,6 @@
         
  		<!-- 修改tableName、domainObjectName -->
         <!-- 设置启动命令：Run -> Edit Configurations -> + -> Maven -> Command line -> mybatis-generator:generate -e-->
- 		<table tableName="t_product" domainObjectName="TProduct" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
+ 		<table tableName="t_service_log" domainObjectName="TServiceLog" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
     </context>
 </generatorConfiguration>

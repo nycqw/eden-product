@@ -11,7 +11,7 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
       driver-class-name: com.mysql.jdbc.Driver
-      url: jdbc:mysql://106.14.187.183:3306/eden
+      url: jdbc:mysql://127.0.0.1:3306/eden
       username: root
       password: Slc13092271475@
   cache:
