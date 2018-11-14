@@ -1,6 +1,7 @@
 package com.eden.service;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.eden.annotation.FlowNode;
 import com.eden.mapper.TProductMapper;
 import com.eden.model.TProduct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
+    @FlowNode(order = 1, description = "产品上架")
     public void saveProductInfo(TProduct productInfo) {
         productMapper.insert(productInfo);
     }

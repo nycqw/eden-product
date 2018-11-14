@@ -19,9 +19,6 @@ public class ControllerExceptionAdvice {
 
     /**
      * 未知异常
-     *
-     * @param e
-     * @return
      */
     @ExceptionHandler(Exception.class)
     @ResponseBody
@@ -31,9 +28,6 @@ public class ControllerExceptionAdvice {
 
     /**
      * 参数校验异常
-     *
-     * @param e
-     * @return
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseBody
