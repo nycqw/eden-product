@@ -9,7 +9,7 @@ public class ArrayUtils {
 
     public static <T> int indexOf(T[] arr, String element) {
         for (int i = 0; i < arr.length; i++) {
-            if (arr[i].equals("element")) {
+            if (arr[i].equals(element)) {
                 return i;
             }
         }
@@ -18,7 +18,7 @@ public class ArrayUtils {
 
     public static <T> int lastIndexOf(T[] arr, String element) {
         for (int i = arr.length - 1; i >= 0; i--) {
-            if (arr[i].equals("element")) {
+            if (arr[i].equals(element)) {
                 return i;
             }
         }
