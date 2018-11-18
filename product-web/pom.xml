@@ -41,26 +41,9 @@
 		</dependency>
 	</dependencies>
 
-	<profiles>
-		<profile>
-			<id>dev</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<properties>
-				<env>dev</env>
-			</properties>
-		</profile>
-		<profile>
-			<id>prd</id>
-			<properties>
-				<env>prd</env>
-			</properties>
-		</profile>
-	</profiles>
-
 	<!--spring boot打包的话需要指定一个唯一的入门-->
 	<build>
+		<finalName>${project.artifactId}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -80,17 +63,6 @@
 			</plugin>
 		</plugins>
 
-		<!-- 使用filter进行过滤，在执行mvn命令的时候带上-Pprd就代表生产环境，就会加载生产环境的properties，-Pdev就代表开发环境（默认） -->
-		<filters>
-			<filter>src/main/resources/env/${env}.properties</filter>
-		</filters>
-		<!-- 将指定资源文件的${}全部被替换成filter标签中的内容 -->
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-			</resource>
-		</resources>
 	</build>
 
 
