@@ -10,7 +10,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 @Documented
-public @interface FlowNode {
+public @interface BusinessLog {
 
     /**
      * 流程节点描述

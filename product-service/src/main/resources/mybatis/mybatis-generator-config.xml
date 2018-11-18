@@ -39,6 +39,6 @@
         
  		<!-- 修改tableName、domainObjectName -->
         <!-- 设置启动命令：Run -> Edit Configurations -> + -> Maven -> Command line -> mybatis-generator:generate -e-->
- 		<table tableName="t_service_log" domainObjectName="TServiceLog" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
+ 		<table tableName="t_product" domainObjectName="TProduct" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
     </context>
 </generatorConfiguration>

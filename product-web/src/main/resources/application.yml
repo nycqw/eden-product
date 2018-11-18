@@ -1,5 +1,5 @@
 server:
-  port: 8083
+  port: 8091
 
 spring:
   profiles:
@@ -11,7 +11,7 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
       driver-class-name: com.mysql.jdbc.Driver
-      url: jdbc:mysql://127.0.0.1:3306/eden
+      url: jdbc:mysql://106.14.187.183:3306/eden
       username: root
       password: Slc13092271475@
   cache:
@@ -49,7 +49,6 @@ dubbo:
   registry:
     address: zookeeper://106.14.187.183:2181
   provider:
-    timeout: 1000
-    retries: 2
+    timeout: 60000
+    retries: 3
     loadbalance: roundrobin
-

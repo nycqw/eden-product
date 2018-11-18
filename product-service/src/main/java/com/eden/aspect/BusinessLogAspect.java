@@ -19,12 +19,12 @@ import java.util.Date;
 
 @Aspect
 @Component
-public class ServiceLogAspect {
+public class BusinessLogAspect {
 
     @Autowired
     private TServiceLogMapper serviceLogMapper;
 
-    @Pointcut("execution(public * com.eden.service..*.*(..))")
+    @Pointcut("@annotation(com.eden.annotation.BusinessLog)")
     public void logPointCut() {
     }
 

@@ -1,32 +1,91 @@
 package com.eden.service;
 
 import com.alibaba.dubbo.config.annotation.Service;
-import com.eden.annotation.FlowNode;
 import com.eden.mapper.TProductMapper;
 import com.eden.model.TProduct;
+import com.eden.util.RedisUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 
 /**
  * @author chenqw
- * @since  2018/11/3
+ * @since 2018/11/3
  */
 @Service
-public class ProductServiceImpl implements ProductService{
+@Slf4j
+public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private TProductMapper productMapper;
 
-    @Cacheable
+    @Autowired
+    private RedisUtils redisUtils;
+
+    private static final String PRODUCT_INFO_CACHE = "productInfoCache";
+    private static final String STOCK_AMOUNT_CACHE = "stockAmountCache";
+
+    private Object lock1 = new Object();
+    private Object lock2 = new Object();
+
+    @Cacheable(value = PRODUCT_INFO_CACHE)
     @Override
     public TProduct queryProductInfo(Long productId) {
         return productMapper.selectByPrimaryKey(productId);
     }
 
     @Override
-    @FlowNode(order = 1, description = "产品上架")
     public void saveProductInfo(TProduct productInfo) {
         productMapper.insert(productInfo);
+    }
+
+    @Override
+    public boolean deductingProductStock(Long productId, int number) {
+        Integer stockAmount = getStockAmount(productId);
+
+        if (stockAmount != null && stockAmount > 0) {
+            synchronized (lock2) {
+
+                stockAmount = (Integer) redisUtils.hget(STOCK_AMOUNT_CACHE, String.valueOf(productId));
+                if (stockAmount > 0) {
+                    double remainAmount = redisUtils.hdecr(STOCK_AMOUNT_CACHE, String.valueOf(productId), number);
+                    log.info("=======================================库存数量：{}", stockAmount);
+                    log.info("=======================================剩余数量：{}", remainAmount);
+                    // 有库存但少于该用户的购买数
+                    if (remainAmount < 0) {
+                        redisUtils.hincr(STOCK_AMOUNT_CACHE, String.valueOf(productId), number);
+                        return false;
+                    }
+                    return true;
+                }/* else if (stockAmount == 0) {
+                    TProduct productInfo = queryProductInfo(productId);
+                    if (productInfo.getStockAmount() > 0){
+                        productInfo.setStockAmount(0L);
+                        productMapper.updateByPrimaryKey(productInfo);
+                    }
+                    return false;
+                }*/
+            }
+        }
+        return false;
+    }
+
+    private Integer getStockAmount(Long productId) {
+        Integer stockAmount = (Integer) redisUtils.hget(STOCK_AMOUNT_CACHE, String.valueOf(productId));
+        if (stockAmount == null) {
+            synchronized (lock1) {
+                stockAmount = (Integer) redisUtils.hget(STOCK_AMOUNT_CACHE, String.valueOf(productId));
+                if (stockAmount == null) {
+                    TProduct productInfo = queryProductInfo(productId);
+                    if (productInfo != null) {
+                        redisUtils.hset(STOCK_AMOUNT_CACHE, String.valueOf(productInfo.getProductId()), productInfo.getStockAmount());
+                        return (Integer) redisUtils.hget(STOCK_AMOUNT_CACHE, String.valueOf(productId));
+                    }
+                    return null;
+                }
+            }
+        }
+        return stockAmount;
     }
 
 }

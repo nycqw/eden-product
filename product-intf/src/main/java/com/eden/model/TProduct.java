@@ -3,24 +3,23 @@ package com.eden.model;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.Date;
 
 @Setter
 @Getter
-public class TProduct {
-    @NotNull(message = "不能为空")
+public class TProduct implements Serializable {
+    private Long id;
+
     private Long productId;
 
-    @NotEmpty(message = "不能为空")
     private String productName;
 
     private Byte productCategory;
 
-    private Double price;
+    private Long stockAmount;
 
-    private Boolean isSelf;
+    private Double price;
 
     private Date startDate;
 
