@@ -45,7 +45,7 @@ dubbo:
     name: product-service
   protocol:
     name: dubbo
-    port: 20881
+    port: 20882
   registry:
     address: zookeeper://106.14.187.183:2181
   provider:
