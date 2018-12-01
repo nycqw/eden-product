@@ -24,7 +24,7 @@ public class BusinessLogAspect {
     @Autowired
     private TServiceLogMapper serviceLogMapper;
 
-    @Pointcut("@annotation(com.eden.annotation.BusinessLog)")
+    @Pointcut("@annotation(com.eden.aspect.annotation.BusinessLog)")
     public void logPointCut() {
     }
 

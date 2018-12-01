@@ -1,9 +1,10 @@
 package com.eden.service;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.eden.aspect.annotation.RedisLock;
 import com.eden.mapper.TProductMapper;
 import com.eden.model.TProduct;
-import com.eden.util.RedisUtils;
+import com.eden.util.RedisDao;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -20,7 +21,7 @@ public class ProductServiceImpl implements ProductService {
     private TProductMapper productMapper;
 
     @Autowired
-    private RedisUtils redisUtils;
+    private RedisDao redisDao;
 
     private static final String PRODUCT_INFO_CACHE = "productInfoCache";
     private static final String STOCK_AMOUNT_CACHE = "stockAmountCache";
@@ -45,15 +46,15 @@ public class ProductServiceImpl implements ProductService {
 
         if (stockAmount != null && stockAmount > 0) {
             synchronized (lock2) {
-
-                stockAmount = (Integer) redisUtils.hget(STOCK_AMOUNT_CACHE, String.valueOf(productId));
+                stockAmount = (Integer) redisDao.hget(STOCK_AMOUNT_CACHE, String.valueOf(productId));
                 if (stockAmount > 0) {
-                    double remainAmount = redisUtils.hdecr(STOCK_AMOUNT_CACHE, String.valueOf(productId), number);
+                    double remainAmount = redisDao.hdecr(STOCK_AMOUNT_CACHE, String.valueOf(productId), number);
                     log.info("=======================================库存数量：{}", stockAmount);
                     log.info("=======================================剩余数量：{}", remainAmount);
                     // 有库存但少于该用户的购买数
                     if (remainAmount < 0) {
-                        redisUtils.hincr(STOCK_AMOUNT_CACHE, String.valueOf(productId), number);
+                        // 库存恢复
+                        redisDao.hincr(STOCK_AMOUNT_CACHE, String.valueOf(productId), number);
                         return false;
                     }
                     return true;
@@ -70,22 +71,43 @@ public class ProductServiceImpl implements ProductService {
         return false;
     }
 
+    /**
+     * 获取现有库存
+     *
+     * @param productId 产品ID
+     * @return
+     */
     private Integer getStockAmount(Long productId) {
-        Integer stockAmount = (Integer) redisUtils.hget(STOCK_AMOUNT_CACHE, String.valueOf(productId));
+        Integer stockAmount = (Integer) redisDao.hget(STOCK_AMOUNT_CACHE, String.valueOf(productId));
         if (stockAmount == null) {
             synchronized (lock1) {
-                stockAmount = (Integer) redisUtils.hget(STOCK_AMOUNT_CACHE, String.valueOf(productId));
+                stockAmount = (Integer) redisDao.hget(STOCK_AMOUNT_CACHE, String.valueOf(productId));
+                // 初始化缓存
                 if (stockAmount == null) {
                     TProduct productInfo = queryProductInfo(productId);
                     if (productInfo != null) {
-                        redisUtils.hset(STOCK_AMOUNT_CACHE, String.valueOf(productInfo.getProductId()), productInfo.getStockAmount());
-                        return (Integer) redisUtils.hget(STOCK_AMOUNT_CACHE, String.valueOf(productId));
+                        redisDao.hset(STOCK_AMOUNT_CACHE, String.valueOf(productInfo.getProductId()), productInfo.getStockAmount());
+                        return (Integer) redisDao.hget(STOCK_AMOUNT_CACHE, String.valueOf(productId));
                     }
                     return null;
                 }
             }
         }
         return stockAmount;
+    }
+
+    @RedisLock
+    @Override
+    public boolean deductingStock(Long productId, Integer number) {
+        TProduct productInfo = queryProductInfo(productId);
+        Long stockAmount = productInfo.getStockAmount();
+        if (stockAmount - number >= 0) {
+            productInfo.setStockAmount(stockAmount - number);
+            productMapper.updateByPrimaryKey(productInfo);
+            log.info("==============扣减成功====================={}", Thread.currentThread().getName());
+            return true;
+        }
+        return false;
     }
 
 }

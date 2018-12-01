@@ -12,13 +12,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @author chenqw
- * @since  2018/11/3
+ * @since 2018/11/3
  */
 
 @Slf4j
@@ -41,6 +43,23 @@ public class ProductController {
     @ResponseBody
     public Result saveProductInfo(@RequestBody @Valid TProduct productInfo) {
         productService.saveProductInfo(productInfo);
+        return Result.success();
+    }
+
+    @RequestMapping("/deducting")
+    @ResponseBody
+    public Result deductingStock(Long productId, Integer number) throws Exception {
+        CountDownLatch countDownLatch = new CountDownLatch(20);
+        for (int i = 0; i < 20; i++) {
+            new Thread(() -> {
+                countDownLatch.countDown();
+                try {
+                    countDownLatch.await();
+                } catch (InterruptedException e) {
+                }
+                productService.deductingStock(productId, number);
+            }).start();
+        }
         return Result.success();
     }
 

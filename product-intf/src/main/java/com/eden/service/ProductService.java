@@ -26,4 +26,6 @@ public interface ProductService {
      * @return
      */
     boolean deductingProductStock(Long productId, int number);
+
+    boolean deductingStock(Long productId, Integer number);
 }
