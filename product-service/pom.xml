@@ -99,12 +99,6 @@
 			<artifactId>spring-boot-starter-aop</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>redis.clients</groupId>
-			<artifactId>jedis</artifactId>
-			<version>2.9.0</version>
-		</dependency>
-
 		<!-- zookeeper lock-->
 		<dependency>
 			<groupId>org.apache.zookeeper</groupId>
