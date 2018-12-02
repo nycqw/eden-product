@@ -5,7 +5,7 @@ package com.eden.util;
  * @version 1.0
  * @since 2018/11/14
  */
-public class ArrayUtils {
+public class ArrayUtil {
 
     public static <T> int indexOf(T[] arr, String element) {
         for (int i = 0; i < arr.length; i++) {

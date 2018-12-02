@@ -1,5 +1,6 @@
 package com.eden.util;
 
+import io.lettuce.core.RedisClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.RedisConnection;
@@ -53,7 +54,7 @@ public class RedisDistributedLock {
      * @param expire     超时时间（毫秒）
      * @return 是否成功
      */
-    public boolean lockWithTimeout(String lockName, String identifier, long timeout, long expire) {
+    public boolean lockWithTimeout(String lockName, String identifier, long expire, long timeout) {
         RedisConnectionFactory connectionFactory = redisTemplate.getConnectionFactory();
         RedisConnection connection = connectionFactory.getConnection();
         long end = System.currentTimeMillis() + timeout;
@@ -75,7 +76,9 @@ public class RedisDistributedLock {
             // 2.1、若在这里程序突然崩溃，则无法设置过期时间，将发生死锁
             connection.expire(lockName.getBytes(), lockExpire);
             RedisConnectionUtils.releaseConnection(connection, connectionFactory);
-            log.info("=================获取锁成功================={}", Thread.currentThread().getName());
+            if (log.isDebugEnabled()) {
+                log.debug("获取锁成功-{}", Thread.currentThread().getName());
+            }
             return true;
         }
 
@@ -129,7 +132,9 @@ public class RedisDistributedLock {
                     if (results == null) {
                         continue;
                     }
-                    log.info("=================释放锁成功================={}", Thread.currentThread().getName());
+                    if (log.isDebugEnabled()) {
+                        log.debug("释放锁成功-{}", Thread.currentThread().getName());
+                    }
                     releaseFlag = true;
                 }
                 connection.unwatch();

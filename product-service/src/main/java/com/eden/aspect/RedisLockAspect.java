@@ -1,7 +1,8 @@
 package com.eden.aspect;
 
-import com.eden.aspect.annotation.RedisLock;
+import com.eden.aspect.annotation.DistributedLock;
 import com.eden.util.AopUtil;
+import com.eden.util.CuratorDistributedLock;
 import com.eden.util.RedisDistributedLock;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -27,31 +28,79 @@ public class RedisLockAspect {
     @Autowired
     private RedisDistributedLock redisDistributedLock;
 
-    @Pointcut(value = "@annotation(com.eden.aspect.annotation.RedisLock)")
+    @Autowired
+    private CuratorDistributedLock curatorDistributedLock;
+
+    @Pointcut(value = "@annotation(com.eden.aspect.annotation.DistributedLock)")
     public void lockCut() {
     }
 
     @Around(value = "lockCut()")
     public Object interceptor(ProceedingJoinPoint joinPoint) throws Throwable {
         Method targetMethod = AopUtil.getTargetMethod(joinPoint);
-        RedisLock redisLock = targetMethod.getAnnotation(RedisLock.class);
-        String lockName = getLockName(joinPoint, targetMethod);
+        DistributedLock distributedLock = targetMethod.getAnnotation(DistributedLock.class);
+        if (LockType.REDIS_LOCK.equals(distributedLock.type())) {
+            return handleRedisDistributedLock(joinPoint, distributedLock);
+        } else {
+            return handleCuratorDistributedLock(joinPoint);
+        }
+    }
+
+    /**
+     * 基于zookeeper的分布式锁
+     *
+     * @param joinPoint
+     * @return
+     * @throws Throwable
+     */
+    private Object handleCuratorDistributedLock(ProceedingJoinPoint joinPoint) throws Throwable {
+        String lockName = getLockName(joinPoint);
+        curatorDistributedLock.lock(lockName);
+        try {
+            return joinPoint.proceed();
+        } catch (Throwable throwable) {
+            // 不对业务异常进行处理直接抛出
+            throw throwable;
+        } finally {
+            // 释放锁
+            curatorDistributedLock.unlock(lockName);
+        }
+    }
+
+    /**
+     * 基于redis的分布式锁
+     */
+    private Object handleRedisDistributedLock(ProceedingJoinPoint joinPoint, DistributedLock distributedLock) throws Throwable {
+        String lockName = getLockName(joinPoint);
         String identifier = UUID.randomUUID().toString();
-        boolean acquire = redisDistributedLock.lock(lockName, identifier, redisLock.expire());
+        // 加锁
+        boolean acquire;
+        if (distributedLock.timeout() == -1L) {
+            // 普通锁
+            acquire = redisDistributedLock.lock(lockName, identifier, distributedLock.expire());
+        } else {
+            // 设置有超时时间的锁
+            acquire = redisDistributedLock.lockWithTimeout(lockName, identifier, distributedLock.expire(), distributedLock.timeout());
+        }
         if (acquire) {
             try {
                 return joinPoint.proceed();
             } catch (Throwable throwable) {
+                // 不对业务异常进行处理直接抛出
                 throw throwable;
             } finally {
                 // 释放锁
                 redisDistributedLock.unLock(lockName, identifier);
             }
         }
-        return false;
+        return null;
     }
 
-    private String getLockName(ProceedingJoinPoint joinPoint, Method targetMethod) {
-        return AopUtil.getClassName(joinPoint) + "-" + targetMethod.getName();
+    /**
+     * 设置锁名称
+     */
+    private String getLockName(ProceedingJoinPoint joinPoint) throws NoSuchMethodException {
+        Method targetMethod = AopUtil.getTargetMethod(joinPoint);
+        return AopUtil.getClassName(joinPoint) + "#" + targetMethod.getName();
     }
 }

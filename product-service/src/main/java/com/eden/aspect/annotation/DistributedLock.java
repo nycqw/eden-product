@@ -1,5 +1,7 @@
 package com.eden.aspect.annotation;
 
+import com.eden.aspect.LockType;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -7,14 +9,14 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface RedisLock {
+public @interface DistributedLock {
 
     /**
      * 过期时间（毫秒）
      *
      * @return
      */
-    long expire() default 3000L;
+    long expire() default 300L;
 
 
     /**
@@ -22,5 +24,12 @@ public @interface RedisLock {
      *
      * @return
      */
-    long timeout() default 3000L;
+    long timeout() default -1L;
+
+    /**
+     * 分布式锁类型
+     *
+     * @return
+     */
+    LockType type() default LockType.REDIS_LOCK;
 }
