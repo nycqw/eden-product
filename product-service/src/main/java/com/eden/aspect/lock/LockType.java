@@ -1,4 +1,4 @@
-package com.eden.aspect;
+package com.eden.aspect.lock;
 
 /**
  * @author chenqw
@@ -15,5 +15,5 @@ public enum LockType {
     /**
      * 基于zookeeper的分布式锁
      */
-    ZOOKEEPER_LOCK;
+    ZOOKEEPER_LOCK
 }

@@ -1,10 +1,9 @@
-package com.eden.aspect;
+package com.eden.aspect.lock;
 
-import com.eden.aspect.annotation.DistributedLock;
+import com.eden.aspect.lock.annotation.DistributedLock;
 import com.eden.util.AopUtil;
-import com.eden.util.CuratorDistributedLock;
-import com.eden.util.RedisDistributedLock;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.curator.framework.CuratorFramework;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -23,7 +22,7 @@ import java.util.UUID;
 @Aspect
 @Component
 @Slf4j
-public class RedisLockAspect {
+public class DistributedLockAspect {
 
     @Autowired
     private RedisDistributedLock redisDistributedLock;
@@ -31,7 +30,7 @@ public class RedisLockAspect {
     @Autowired
     private CuratorDistributedLock curatorDistributedLock;
 
-    @Pointcut(value = "@annotation(com.eden.aspect.annotation.DistributedLock)")
+    @Pointcut(value = "@annotation(com.eden.aspect.lock.annotation.DistributedLock)")
     public void lockCut() {
     }
 

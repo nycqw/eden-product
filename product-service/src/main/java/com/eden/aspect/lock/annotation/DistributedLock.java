@@ -1,6 +1,6 @@
-package com.eden.aspect.annotation;
+package com.eden.aspect.lock.annotation;
 
-import com.eden.aspect.LockType;
+import com.eden.aspect.lock.LockType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -16,8 +16,7 @@ public @interface DistributedLock {
      *
      * @return
      */
-    long expire() default 300L;
-
+    long expire() default 3000L;
 
     /**
      * 获取锁超时时间（毫秒）

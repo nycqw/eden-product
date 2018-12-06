@@ -1,4 +1,4 @@
-package com.eden.aspect.annotation;
+package com.eden.aspect.log.annotation;
 
 import java.lang.annotation.*;
 

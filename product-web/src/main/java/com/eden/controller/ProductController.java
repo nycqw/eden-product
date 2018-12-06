@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @author chenqw
@@ -49,16 +51,18 @@ public class ProductController {
     @RequestMapping("/deducting")
     @ResponseBody
     public Result deductingStock(Long productId, Integer number) throws Exception {
-        CountDownLatch countDownLatch = new CountDownLatch(20);
-        for (int i = 0; i < 20; i++) {
-            new Thread(() -> {
+        int threadNum = 500;
+        CountDownLatch countDownLatch = new CountDownLatch(threadNum);
+        ExecutorService executorService = Executors.newFixedThreadPool(threadNum);
+        for (int i = 0; i < threadNum; i++) {
+            executorService.submit(() -> {
                 countDownLatch.countDown();
                 try {
                     countDownLatch.await();
                 } catch (InterruptedException e) {
                 }
                 productService.deductingStock(productId, number);
-            }).start();
+            });
         }
         return Result.success();
     }

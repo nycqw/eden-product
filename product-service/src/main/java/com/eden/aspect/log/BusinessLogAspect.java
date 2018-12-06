@@ -1,4 +1,4 @@
-package com.eden.aspect;
+package com.eden.aspect.log;
 
 import com.alibaba.fastjson.JSON;
 import com.eden.enums.ResultEnum;
@@ -24,7 +24,7 @@ public class BusinessLogAspect {
     @Autowired
     private TServiceLogMapper serviceLogMapper;
 
-    @Pointcut("@annotation(com.eden.aspect.annotation.BusinessLog)")
+    @Pointcut("@annotation(com.eden.aspect.log.annotation.BusinessLog)")
     public void logPointCut() {
     }
 

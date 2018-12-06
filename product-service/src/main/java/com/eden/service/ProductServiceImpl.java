@@ -1,12 +1,15 @@
 package com.eden.service;
 
 import com.alibaba.dubbo.config.annotation.Service;
-import com.eden.aspect.LockType;
-import com.eden.aspect.annotation.DistributedLock;
+import com.eden.aspect.lock.LockType;
+import com.eden.aspect.lock.annotation.DistributedLock;
+import com.eden.aspect.lock.annotation.ZkLock;
 import com.eden.mapper.TProductMapper;
 import com.eden.model.TProduct;
 import com.eden.util.RedisUtil;
+import com.eden.util.RedissonUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 
@@ -23,6 +26,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private RedisUtil redisUtil;
+
+    @Autowired
+    private RedissonUtil redissonUtil;
 
     private static final String PRODUCT_INFO_CACHE = "productInfoCache";
     private static final String STOCK_AMOUNT_CACHE = "stockAmountCache";
@@ -97,16 +103,26 @@ public class ProductServiceImpl implements ProductService {
         return stockAmount;
     }
 
-    @DistributedLock(type = LockType.ZOOKEEPER_LOCK)
+    //@DistributedLock(type = LockType.REDIS_LOCK)
+    //@ZkLock
     @Override
     public boolean deductingStock(Long productId, Integer number) {
-        TProduct productInfo = queryProductInfo(productId);
-        Long stockAmount = productInfo.getStockAmount();
-        if (stockAmount - number >= 0) {
-            productInfo.setStockAmount(stockAmount - number);
-            productMapper.updateByPrimaryKey(productInfo);
-            log.info("==============扣减成功====================={}", Thread.currentThread().getName());
-            return true;
+        RLock lock = redissonUtil.getRLock("lockName");
+        lock.lock();
+        try {
+            TProduct productInfo = queryProductInfo(productId);
+            Long stockAmount = productInfo.getStockAmount();
+            if (stockAmount - number >= 0) {
+                productInfo.setStockAmount(stockAmount - number);
+                productMapper.updateByPrimaryKey(productInfo);
+                log.info("===========扣减成功=========={}", Thread.currentThread().getName());
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+
+        } finally {
+            lock.unlock();
         }
         return false;
     }

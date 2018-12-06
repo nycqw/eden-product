@@ -4,6 +4,10 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
@@ -32,6 +36,15 @@ import java.util.Map;
 @EnableCaching
 @Slf4j
 public class RedisConfig extends CachingConfigurerSupport {
+
+    @Value("${redis.host}")
+    private String host;
+
+    @Value("${redis.port}")
+    private String port;
+
+    @Value("${redis.password}")
+    private String password;
 
     /**
      * 缓存管理器
@@ -147,6 +160,18 @@ public class RedisConfig extends CachingConfigurerSupport {
             }
         };
         return cacheErrorHandler;
+    }
+
+    /**
+     * redisson 客户端
+     *
+     * @return
+     */
+    @Bean
+    public RedissonClient redissonClient() {
+        Config config = new Config();
+        config.useSingleServer().setAddress("redis://" + host + ":" + port).setPassword(password);
+        return Redisson.create(config);
     }
 
 }
