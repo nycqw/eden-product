@@ -1,9 +1,11 @@
 package com.eden.aspect.lock;
 
 import com.eden.aspect.lock.annotation.DistributedLock;
+import com.eden.aspect.lock.handle.CuratorDistributedLock;
+import com.eden.aspect.lock.handle.LockType;
+import com.eden.aspect.lock.handle.RedisDistributedLock;
 import com.eden.util.AopUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.curator.framework.CuratorFramework;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;

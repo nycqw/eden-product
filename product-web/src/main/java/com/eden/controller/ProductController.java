@@ -1,24 +1,18 @@
 package com.eden.controller;
 
-import com.eden.service.ProductService;
 import com.eden.domain.result.Result;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import com.eden.model.TProduct;
+import com.eden.service.ProductService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 /**
  * @author chenqw
@@ -48,12 +42,29 @@ public class ProductController {
         return Result.success();
     }
 
+    @RequestMapping("/stock")
+    @ResponseBody
+    public Result stock(Long productId, Integer number) {
+        //productService.stock(productId, number);
+        return Result.success();
+    }
+
     @RequestMapping("/deducting")
     @ResponseBody
-    public Result deductingStock(Long productId, Integer number) throws Exception {
-        int threadNum = 500;
+    public Result deductingStock(Long productId, Integer number) {
+        int threadNum = 10;
+        long beginTime = System.currentTimeMillis();
+        log.info("开始时间：{}", beginTime);
+
+        CyclicBarrier cyclicBarrier = new CyclicBarrier(threadNum, () -> {
+            long endTime = System.currentTimeMillis();
+            log.info("结束时间：{}", endTime);
+            log.info("总时长：{}", (endTime - beginTime) / threadNum);
+        });
+
         CountDownLatch countDownLatch = new CountDownLatch(threadNum);
         ExecutorService executorService = Executors.newFixedThreadPool(threadNum);
+
         for (int i = 0; i < threadNum; i++) {
             executorService.submit(() -> {
                 countDownLatch.countDown();
@@ -62,6 +73,11 @@ public class ProductController {
                 } catch (InterruptedException e) {
                 }
                 productService.deductingStock(productId, number);
+                try {
+                    cyclicBarrier.await();
+                } catch (InterruptedException e) {
+                } catch (BrokenBarrierException e) {
+                }
             });
         }
         return Result.success();

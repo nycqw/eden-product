@@ -1,4 +1,4 @@
-package com.eden.aspect.lock;
+package com.eden.aspect.lock.handle;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
@@ -43,9 +43,7 @@ public class CuratorDistributedLock implements InitializingBean {
                         .withMode(CreateMode.EPHEMERAL)
                         .withACL(ZooDefs.Ids.OPEN_ACL_UNSAFE)
                         .forPath(keyPath);
-                if (log.isDebugEnabled()) {
-                    log.debug("获取锁成功-{}", Thread.currentThread().getName());
-                }
+                log.info("获取锁成功-{}", Thread.currentThread().getName());
                 break;
             } catch (Exception e) {
                 try {
@@ -69,9 +67,7 @@ public class CuratorDistributedLock implements InitializingBean {
             String keyPath = "/" + ROOT_PATH_LOCK + "/" + lockName;
             if (curatorFramework.checkExists().forPath(keyPath) != null) {
                 curatorFramework.delete().forPath(keyPath);
-                if (log.isDebugEnabled()) {
-                    log.debug("释放锁成功-{}", Thread.currentThread().getName());
-                }
+                log.info("释放锁成功-{}", Thread.currentThread().getName());
             }
         } catch (Exception e) {
             log.error("failed to release lock");

@@ -1,6 +1,6 @@
 package com.eden.aspect.lock.annotation;
 
-import com.eden.aspect.lock.LockType;
+import com.eden.aspect.lock.handle.LockType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
