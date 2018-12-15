@@ -1,5 +1,6 @@
 package com.eden.controller;
 
+import com.eden.domain.request.StockParam;
 import com.eden.domain.result.Result;
 import com.eden.model.TProduct;
 import com.eden.service.ProductService;
@@ -9,9 +10,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
+import java.util.Map;
 import java.util.concurrent.*;
 
 /**
@@ -44,14 +47,18 @@ public class ProductController {
 
     @RequestMapping("/reduce/normal")
     @ResponseBody
-    public Result stock(Long productId, Integer number) {
+    public Result stock(@RequestBody StockParam stockParam) {
+        Long productId = stockParam.getProductId();
+        Integer number = stockParam.getNumber();
         productService.reduceStockNormal(productId, number);
         return Result.success();
     }
 
     @RequestMapping("/reduce/lock")
     @ResponseBody
-    public Result stockLock(Long productId, Integer number) {
+    public Result stockLock(@RequestBody StockParam stockParam) {
+        Long productId = stockParam.getProductId();
+        Integer number = stockParam.getNumber();
         productService.reduceStockAddLock(productId, number);
         return Result.success();
     }

@@ -23,6 +23,7 @@ public class ControllerExceptionAdvice {
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public Result handleException(Exception e) {
+        log.error(ResultEnum.UNKNOWN_ERROR.getMessage(), e);
         return Result.fail(ResultEnum.UNKNOWN_ERROR.getCode(), e.getMessage());
     }
 
