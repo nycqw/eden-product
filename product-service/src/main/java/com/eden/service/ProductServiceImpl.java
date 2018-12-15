@@ -1,6 +1,8 @@
 package com.eden.service;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.eden.aspect.lock.annotation.DistributedLock;
+import com.eden.aspect.lock.handle.LockType;
 import com.eden.mapper.TProductMapper;
 import com.eden.model.TProduct;
 import com.eden.util.RedisUtil;
@@ -39,8 +41,15 @@ public class ProductServiceImpl implements ProductService {
         productMapper.insert(productInfo);
     }
 
+    /**
+     * 扣减库存（未加分布式锁）
+     *
+     * @param productId 产品ID
+     * @param number    扣减数量
+     * @return
+     */
     @Override
-    public boolean deductingProductStock(Long productId, int number) {
+    public boolean reduceStockNormal(Long productId, int number) {
         Integer stockAmount = getStockAmount(productId);
 
         if (stockAmount != null && stockAmount > 0) {
@@ -57,14 +66,7 @@ public class ProductServiceImpl implements ProductService {
                         return false;
                     }
                     return true;
-                }/* else if (stockAmount == 0) {
-                    TProduct productInfo = queryProductInfo(productId);
-                    if (productInfo.getStockAmount() > 0){
-                        productInfo.setStockAmount(0L);
-                        productMapper.updateByPrimaryKey(productInfo);
-                    }
-                    return false;
-                }*/
+                }
             }
         }
         return false;
@@ -95,9 +97,16 @@ public class ProductServiceImpl implements ProductService {
         return stockAmount;
     }
 
-    //@DistributedLock(type = LockType.ZOOKEEPER_LOCK)
+    /**
+     * 扣减库存（加分布式锁）
+     *
+     * @param productId 产品ID
+     * @param number    扣减数量
+     * @return
+     */
+    @DistributedLock(type = LockType.ZOOKEEPER_LOCK)
     @Override
-    public boolean deductingStock(Long productId, Integer number) {
+    public boolean reduceStockAddLock(Long productId, Integer number) {
         TProduct productInfo = queryProductInfo(productId);
         Long stockAmount = productInfo.getStockAmount();
         if (stockAmount - number >= 0) {

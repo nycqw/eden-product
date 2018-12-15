@@ -25,7 +25,7 @@ public interface ProductService {
      * @param number 扣减数量
      * @return
      */
-    boolean deductingProductStock(Long productId, int number);
+    boolean reduceStockNormal(Long productId, int number);
 
-    boolean deductingStock(Long productId, Integer number);
+    boolean reduceStockAddLock(Long productId, Integer number);
 }

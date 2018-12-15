@@ -42,10 +42,17 @@ public class ProductController {
         return Result.success();
     }
 
-    @RequestMapping("/stock")
+    @RequestMapping("/reduce/normal")
     @ResponseBody
     public Result stock(Long productId, Integer number) {
-        //productService.stock(productId, number);
+        productService.reduceStockNormal(productId, number);
+        return Result.success();
+    }
+
+    @RequestMapping("/reduce/lock")
+    @ResponseBody
+    public Result stockLock(Long productId, Integer number) {
+        productService.reduceStockAddLock(productId, number);
         return Result.success();
     }
 
@@ -72,7 +79,7 @@ public class ProductController {
                     countDownLatch.await();
                 } catch (InterruptedException e) {
                 }
-                productService.deductingStock(productId, number);
+                productService.reduceStockAddLock(productId, number);
                 try {
                     cyclicBarrier.await();
                 } catch (InterruptedException e) {
