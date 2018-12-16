@@ -31,6 +31,18 @@ spring:
         max-wait: -1
         max-idle: 5
         min-idle: 0
+  rabbitmq:
+    host: 106.14.187.183
+    port: 5672
+    username: root
+    password: 123456
+    publisher-confirms: true
+    publisher-returns: true
+    template:
+      mandatory: true
+    listener:
+      simple:
+        acknowledge-mode: manual
 
 mybatis:
   mapper-locations: classpath:mybatis/mapper/*.xml

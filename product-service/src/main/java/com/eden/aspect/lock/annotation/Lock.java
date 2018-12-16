@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface DistributedLock {
+public @interface Lock {
 
     /**
      * 过期时间（毫秒）
@@ -30,5 +30,5 @@ public @interface DistributedLock {
      *
      * @return
      */
-    LockType type() default LockType.REDIS_LOCK;
+    LockType type() default LockType.ZOOKEEPER_LOCK;
 }

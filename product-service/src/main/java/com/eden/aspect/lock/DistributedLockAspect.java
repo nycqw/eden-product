@@ -1,6 +1,6 @@
 package com.eden.aspect.lock;
 
-import com.eden.aspect.lock.annotation.DistributedLock;
+import com.eden.aspect.lock.annotation.Lock;
 import com.eden.aspect.lock.handle.CuratorDistributedLock;
 import com.eden.aspect.lock.handle.LockType;
 import com.eden.aspect.lock.handle.RedisDistributedLock;
@@ -32,16 +32,16 @@ public class DistributedLockAspect {
     @Autowired
     private CuratorDistributedLock curatorDistributedLock;
 
-    @Pointcut(value = "@annotation(com.eden.aspect.lock.annotation.DistributedLock)")
+    @Pointcut(value = "@annotation(com.eden.aspect.lock.annotation.Lock)")
     public void lockCut() {
     }
 
     @Around(value = "lockCut()")
     public Object interceptor(ProceedingJoinPoint joinPoint) throws Throwable {
         Method targetMethod = AopUtil.getTargetMethod(joinPoint);
-        DistributedLock distributedLock = targetMethod.getAnnotation(DistributedLock.class);
-        if (LockType.REDIS_LOCK.equals(distributedLock.type())) {
-            return handleRedisDistributedLock(joinPoint, distributedLock);
+        Lock lock = targetMethod.getAnnotation(Lock.class);
+        if (LockType.REDIS_LOCK.equals(lock.type())) {
+            return handleRedisDistributedLock(joinPoint, lock);
         } else {
             return handleCuratorDistributedLock(joinPoint);
         }
@@ -71,17 +71,17 @@ public class DistributedLockAspect {
     /**
      * 基于redis的分布式锁
      */
-    private Object handleRedisDistributedLock(ProceedingJoinPoint joinPoint, DistributedLock distributedLock) throws Throwable {
+    private Object handleRedisDistributedLock(ProceedingJoinPoint joinPoint, Lock lock) throws Throwable {
         String lockName = getLockName(joinPoint);
         String identifier = UUID.randomUUID().toString();
         // 加锁
         boolean acquire;
-        if (distributedLock.timeout() == -1L) {
+        if (lock.timeout() == -1L) {
             // 普通锁
-            acquire = redisDistributedLock.lock(lockName, identifier, distributedLock.expire());
+            acquire = redisDistributedLock.lock(lockName, identifier, lock.expire());
         } else {
             // 设置有超时时间的锁
-            acquire = redisDistributedLock.lockWithTimeout(lockName, identifier, distributedLock.expire(), distributedLock.timeout());
+            acquire = redisDistributedLock.lockWithTimeout(lockName, identifier, lock.expire(), lock.timeout());
         }
         if (acquire) {
             try {

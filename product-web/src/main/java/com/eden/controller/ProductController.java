@@ -45,25 +45,21 @@ public class ProductController {
         return Result.success();
     }
 
-    @RequestMapping("/reduce/normal")
-    @ResponseBody
-    public Result stock(@RequestBody StockParam stockParam) {
-        Long productId = stockParam.getProductId();
-        Integer number = stockParam.getNumber();
-        productService.reduceStockNormal(productId, number);
-        return Result.success();
-    }
-
     @RequestMapping("/reduce/lock")
     @ResponseBody
     public Result stockLock(@RequestBody StockParam stockParam) {
-        Long productId = stockParam.getProductId();
-        Integer number = stockParam.getNumber();
-        productService.reduceStockAddLock(productId, number);
+        productService.reduceStockAddLock(stockParam);
         return Result.success();
     }
 
-    @RequestMapping("/deducting")
+    @RequestMapping("/reduce/async")
+    @ResponseBody
+    public Result stockAsync(@RequestBody StockParam stockParam) {
+        productService.reduceStockAsync(stockParam);
+        return Result.success();
+    }
+
+    /*@RequestMapping("/deducting")
     @ResponseBody
     public Result deductingStock(Long productId, Integer number) {
         int threadNum = 10;
@@ -95,6 +91,6 @@ public class ProductController {
             });
         }
         return Result.success();
-    }
+    }*/
 
 }

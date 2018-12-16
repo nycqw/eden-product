@@ -1,5 +1,6 @@
 package com.eden.service;
 
+import com.eden.domain.request.StockParam;
 import com.eden.model.TProduct;
 
 public interface ProductService {
@@ -19,13 +20,7 @@ public interface ProductService {
      */
     void saveProductInfo(TProduct productInfo);
 
-    /**
-     *  扣减库存
-     * @param productId 产品ID
-     * @param number 扣减数量
-     * @return
-     */
-    boolean reduceStockNormal(Long productId, int number);
+    boolean reduceStockAddLock(StockParam stockParam);
 
-    boolean reduceStockAddLock(Long productId, Integer number);
+    boolean reduceStockAsync(StockParam stockParam);
 }

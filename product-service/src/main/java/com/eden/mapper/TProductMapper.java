@@ -1,5 +1,6 @@
 package com.eden.mapper;
 
+import com.eden.domain.request.StockParam;
 import com.eden.model.TProduct;
 
 public interface TProductMapper {
@@ -14,4 +15,6 @@ public interface TProductMapper {
     int updateByPrimaryKeySelective(TProduct record);
 
     int updateByPrimaryKey(TProduct record);
+
+    void updateStock(StockParam stockParam);
 }

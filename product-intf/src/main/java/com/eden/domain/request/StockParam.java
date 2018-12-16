@@ -14,6 +14,16 @@ import java.io.Serializable;
 @Getter
 public class StockParam implements Serializable {
 
+    /**
+     * 产品ID
+     */
     private Long productId;
-    private Integer number;
+    /**
+     * 购买数量
+     */
+    private Long number;
+    /**
+     * 库存数量
+     */
+    private Long stockAmount;
 }
