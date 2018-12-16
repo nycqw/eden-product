@@ -104,7 +104,7 @@ public class ProductServiceImpl implements ProductService {
      * @param number    扣减数量
      * @return
      */
-    @DistributedLock(type = LockType.ZOOKEEPER_LOCK)
+    @DistributedLock(type = LockType.REDIS_LOCK)
     @Override
     public boolean reduceStockAddLock(Long productId, Integer number) {
         TProduct productInfo = queryProductInfo(productId);
