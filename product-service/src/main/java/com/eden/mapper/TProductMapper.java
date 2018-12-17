@@ -3,6 +3,8 @@ package com.eden.mapper;
 import com.eden.domain.request.StockParam;
 import com.eden.model.TProduct;
 
+import java.util.List;
+
 public interface TProductMapper {
     int deleteByPrimaryKey(Long id);
 
@@ -11,6 +13,8 @@ public interface TProductMapper {
     int insertSelective(TProduct record);
 
     TProduct selectByPrimaryKey(Long id);
+
+    List<TProduct> selectList();
 
     int updateByPrimaryKeySelective(TProduct record);
 

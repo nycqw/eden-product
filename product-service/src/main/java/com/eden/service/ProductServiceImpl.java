@@ -15,6 +15,9 @@ import org.springframework.amqp.rabbit.support.CorrelationData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 
+import javax.annotation.PostConstruct;
+import java.util.List;
+
 /**
  * @author chenqw
  * @since 2018/11/3
@@ -34,6 +37,23 @@ public class ProductServiceImpl implements ProductService {
 
     private static final String PRODUCT_INFO_CACHE = "productInfoCache";
     private static final String STOCK_AMOUNT_CACHE = "stockAmountCache";
+
+    /**
+     * 初始化所有的秒杀产品
+     */
+    @PostConstruct
+    public void init() {
+        List<TProduct> productList = productMapper.selectList();
+        for (TProduct product : productList) {
+            boolean result = redisUtil.hSetNX(STOCK_AMOUNT_CACHE, String.valueOf(product.getProductId()), String.valueOf(product.getStockAmount()));
+            if (!result) {
+                Integer stockAmount = (Integer) redisUtil.hget(STOCK_AMOUNT_CACHE, String.valueOf(product.getProductId()));
+                if (stockAmount == 0) {
+                    redisUtil.hset(STOCK_AMOUNT_CACHE, String.valueOf(product.getProductId()), String.valueOf(product.getStockAmount()));
+                }
+            }
+        }
+    }
 
     @Cacheable(value = PRODUCT_INFO_CACHE)
     @Override
@@ -67,7 +87,7 @@ public class ProductServiceImpl implements ProductService {
     /**
      * 库存信息缓存进redis 中，通过mq 异步更新数据库中的缓存信息，实现redis、mysql 中数据的最终一致性
      */
-    //@Lock
+    @Lock
     @Override
     public boolean reduceStockAsync(StockParam stockParam) {
         Long productId = stockParam.getProductId();
@@ -87,20 +107,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private boolean checkAndCacheStock(Long productId) {
-        // 缓存中库存数量检查
-        if (redisUtil.hHasKey(STOCK_AMOUNT_CACHE, String.valueOf(productId))) {
-            Integer stockAmount = (Integer) redisUtil.hget(STOCK_AMOUNT_CACHE, String.valueOf(productId));
-            if (stockAmount > 0) return true;
-        }
-        // 缓存中库存不存在，检查是否补货重新缓存
-        TProduct productInfo = queryProductInfo(productId);
-        Long stockAmount = productInfo.getStockAmount();
-        if (stockAmount > 0) {
-            // 已经补货
-            redisUtil.hSetNX(STOCK_AMOUNT_CACHE, String.valueOf(productId), String.valueOf(stockAmount));
-            return true;
-        }
-        return false;
+        Integer stockAmount = (Integer) redisUtil.hget(STOCK_AMOUNT_CACHE, String.valueOf(productId));
+        return stockAmount > 0 ? true : false;
     }
 
     private void asyncReduceStock(StockParam stockParam, Long productId) {
