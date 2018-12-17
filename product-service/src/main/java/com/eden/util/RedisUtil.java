@@ -29,7 +29,7 @@ public final class RedisUtil {
      * @param value 值
      * @return
      */
-    public boolean setIfNotExists(byte[] key, byte[] value) {
+    public boolean hSetNX(byte[] key, byte[] value) {
         RedisConnectionFactory connectionFactory = redisTemplate.getConnectionFactory();
         RedisConnection connection = connectionFactory.getConnection();
         Boolean result = connection.setNX(key, value);
@@ -37,7 +37,7 @@ public final class RedisUtil {
         return result;
     }
 
-    public boolean setIfNotExists(String cacheName, String key, String value) {
+    public boolean hSetNX(String cacheName, String key, String value) {
         RedisConnectionFactory connectionFactory = redisTemplate.getConnectionFactory();
         RedisConnection connection = connectionFactory.getConnection();
         Boolean result = connection.hSetNX(cacheName.getBytes(),key.getBytes(), value.getBytes());

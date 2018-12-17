@@ -67,7 +67,7 @@ public class ProductServiceImpl implements ProductService {
     /**
      * 库存信息缓存进redis 中，通过mq 异步更新数据库中的缓存信息，实现redis、mysql 中数据的最终一致性
      */
-    @Lock
+    //@Lock
     @Override
     public boolean reduceStockAsync(StockParam stockParam) {
         Long productId = stockParam.getProductId();
@@ -94,12 +94,10 @@ public class ProductServiceImpl implements ProductService {
         }
         // 缓存中库存不存在，检查是否补货重新缓存
         TProduct productInfo = queryProductInfo(productId);
-        //byte[] stockBytes = ProtoStuffUtils.serialize(productInfo.getStockAmount());
-        //redisUtil.setIfNotExists(ProtoStuffUtils.serialize(productId), stockBytes);
         Long stockAmount = productInfo.getStockAmount();
         if (stockAmount > 0) {
             // 已经补货
-            redisUtil.setIfNotExists(STOCK_AMOUNT_CACHE, String.valueOf(productId), String.valueOf(stockAmount));
+            redisUtil.hSetNX(STOCK_AMOUNT_CACHE, String.valueOf(productId), String.valueOf(stockAmount));
             return true;
         }
         return false;
