@@ -23,4 +23,6 @@ public interface ProductService {
     boolean reduceStockAddLock(StockParam stockParam);
 
     boolean reduceStockAsync(StockParam stockParam);
+
+    boolean reduceStockAsync2(StockParam stockParam);
 }

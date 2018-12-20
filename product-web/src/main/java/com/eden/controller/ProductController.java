@@ -55,7 +55,7 @@ public class ProductController {
     @RequestMapping("/reduce/async")
     @ResponseBody
     public Result stockAsync(@RequestBody StockParam stockParam) {
-        productService.reduceStockAsync(stockParam);
+        productService.reduceStockAsync2(stockParam);
         return Result.success();
     }
 

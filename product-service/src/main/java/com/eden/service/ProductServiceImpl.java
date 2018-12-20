@@ -91,7 +91,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public boolean reduceStockAsync(StockParam stockParam) {
         Long productId = stockParam.getProductId();
-        if (checkAndCacheStock(productId)) {
+        Integer stockAmount = (Integer) redisUtil.hget(STOCK_AMOUNT_CACHE, String.valueOf(productId));
+        if (stockAmount > 0) {
             Long number = stockParam.getNumber();
             Double remainAmount = redisUtil.hdecr(STOCK_AMOUNT_CACHE, String.valueOf(productId), number);
             if (remainAmount > 0) {
@@ -106,9 +107,36 @@ public class ProductServiceImpl implements ProductService {
         return false;
     }
 
-    private boolean checkAndCacheStock(Long productId) {
-        Integer stockAmount = (Integer) redisUtil.hget(STOCK_AMOUNT_CACHE, String.valueOf(productId));
-        return stockAmount > 0 ? true : false;
+    /**
+     * 尽早返回原则：若不符合条件尽早返回，不执行多余的逻辑
+     * 在秒杀场景下大部分扣减库存的请求都是失败的，所以将判断是否扣减成功放在最前面
+     * @param stockParam
+     * @return
+     */
+    @Lock
+    @Override
+    public boolean reduceStockAsync2(StockParam stockParam) {
+        Long productId = stockParam.getProductId();
+        if (!redisUtil.hHasKey(STOCK_AMOUNT_CACHE, String.valueOf(productId))) {
+            return false;
+        }
+
+        Long number = stockParam.getNumber();
+        Double remainAmount = redisUtil.hdecr(STOCK_AMOUNT_CACHE, String.valueOf(productId), number);
+        if (remainAmount < 0) {
+            redisUtil.hincr(STOCK_AMOUNT_CACHE, String.valueOf(productId), number);
+            log.info("库存不足，操作回退");
+            return false;
+        } else {
+            // 异步库存扣减
+            stockParam.setStockAmount(remainAmount.longValue());
+            asyncReduceStock(stockParam, productId);
+            if (remainAmount == 0) {
+                redisUtil.hdel(STOCK_AMOUNT_CACHE, String.valueOf(productId));
+            }
+            log.info("剩余数量：{}", remainAmount.longValue());
+            return true;
+        }
     }
 
     private void asyncReduceStock(StockParam stockParam, Long productId) {
