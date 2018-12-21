@@ -126,6 +126,7 @@
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
+
     <update id="updateByPrimaryKey" parameterType="com.eden.model.TProduct">
     update t_product
     set product_id = #{productId,jdbcType=BIGINT},
@@ -141,7 +142,7 @@
     <update id="updateStock" parameterType="com.eden.domain.request.StockParam">
       <![CDATA[
         update t_product
-        set stock_amount = stock_amount - #{number,jdbcType=BIGINT}
+        set stock_amount = stock_amount - #{purchaseAmount,jdbcType=BIGINT}
         where product_id = #{productId,jdbcType=BIGINT}
       ]]>
     </update>

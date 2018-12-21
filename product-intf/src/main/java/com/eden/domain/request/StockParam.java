@@ -21,7 +21,7 @@ public class StockParam implements Serializable {
     /**
      * 购买数量
      */
-    private Long number;
+    private Long purchaseAmount;
     /**
      * 库存数量
      */

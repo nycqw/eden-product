@@ -3,7 +3,7 @@ package com.eden.service;
 import com.eden.domain.request.StockParam;
 import com.eden.model.TProduct;
 
-public interface ProductService {
+public interface IProductService {
 
     /**
      * 获取产品信息

@@ -3,19 +3,16 @@ package com.eden.controller;
 import com.eden.domain.request.StockParam;
 import com.eden.domain.result.Result;
 import com.eden.model.TProduct;
-import com.eden.service.ProductService;
+import com.eden.service.IProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
-import java.util.Map;
-import java.util.concurrent.*;
 
 /**
  * @author chenqw
@@ -29,7 +26,7 @@ import java.util.concurrent.*;
 public class ProductController {
 
     @Autowired
-    private ProductService productService;
+    private IProductService productService;
 
     @RequestMapping("/query")
     @ResponseBody

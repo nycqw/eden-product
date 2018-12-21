@@ -40,7 +40,7 @@ public class ProductStockReduceListener {
         });
 
         TProduct productInfo = productMapper.selectByPrimaryKey(stockParam.getProductId());
-        if (productInfo.getStockAmount() - stockParam.getNumber() >= 0) {
+        if (productInfo.getStockAmount() - stockParam.getPurchaseAmount() >= 0) {
             productMapper.updateStock(stockParam);
             log.info("===========扣减成功==========");
         } else {

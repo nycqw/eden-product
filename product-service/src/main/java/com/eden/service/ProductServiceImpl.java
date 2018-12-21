@@ -24,7 +24,7 @@ import java.util.List;
  */
 @Service
 @Slf4j
-public class ProductServiceImpl implements ProductService {
+public class ProductServiceImpl implements IProductService {
 
     @Autowired
     private TProductMapper productMapper;
@@ -45,13 +45,9 @@ public class ProductServiceImpl implements ProductService {
     public void init() {
         List<TProduct> productList = productMapper.selectList();
         for (TProduct product : productList) {
-            boolean result = redisUtil.hSetNX(STOCK_AMOUNT_CACHE, String.valueOf(product.getProductId()), String.valueOf(product.getStockAmount()));
-            if (!result) {
-                Integer stockAmount = (Integer) redisUtil.hget(STOCK_AMOUNT_CACHE, String.valueOf(product.getProductId()));
-                if (stockAmount == 0) {
-                    redisUtil.hset(STOCK_AMOUNT_CACHE, String.valueOf(product.getProductId()), String.valueOf(product.getStockAmount()));
-                }
-            }
+            String productId = String.valueOf(product.getProductId());
+            String stockAmount = String.valueOf(product.getStockAmount());
+            redisUtil.hSetNX(STOCK_AMOUNT_CACHE, productId, stockAmount);
         }
     }
 
@@ -69,14 +65,14 @@ public class ProductServiceImpl implements ProductService {
     /**
      * 扣减库存（加分布式锁）
      */
-    @Lock(type = LockType.REDIS_LOCK)
+    @Lock
     @Override
     public boolean reduceStockAddLock(StockParam stockParam) {
         TProduct productInfo = queryProductInfo(stockParam.getProductId());
         Long stockAmount = productInfo.getStockAmount();
-        Long number = stockParam.getNumber();
-        if (stockAmount - number >= 0) {
-            productInfo.setStockAmount(stockAmount - number);
+        Long purchaseAmount = stockParam.getPurchaseAmount();
+        if (stockAmount - purchaseAmount >= 0) {
+            productInfo.setStockAmount(stockAmount - purchaseAmount);
             productMapper.updateByPrimaryKey(productInfo);
             log.info("===========扣减成功=========={}", Thread.currentThread().getName());
             return true;
@@ -93,15 +89,15 @@ public class ProductServiceImpl implements ProductService {
         Long productId = stockParam.getProductId();
         Integer stockAmount = (Integer) redisUtil.hget(STOCK_AMOUNT_CACHE, String.valueOf(productId));
         if (stockAmount > 0) {
-            Long number = stockParam.getNumber();
-            Double remainAmount = redisUtil.hdecr(STOCK_AMOUNT_CACHE, String.valueOf(productId), number);
+            Long purchaseAmount = stockParam.getPurchaseAmount();
+            Double remainAmount = redisUtil.hdecr(STOCK_AMOUNT_CACHE, String.valueOf(productId), purchaseAmount);
             if (remainAmount > 0) {
                 log.info("剩余数量：{}", remainAmount.longValue());
                 stockParam.setStockAmount(remainAmount.longValue());
                 asyncReduceStock(stockParam, productId);
                 return true;
             } else {
-                redisUtil.hincr(STOCK_AMOUNT_CACHE, String.valueOf(productId), number);
+                redisUtil.hincr(STOCK_AMOUNT_CACHE, String.valueOf(productId), purchaseAmount);
             }
         }
         return false;
@@ -121,10 +117,10 @@ public class ProductServiceImpl implements ProductService {
             return false;
         }
 
-        Long number = stockParam.getNumber();
-        Double remainAmount = redisUtil.hdecr(STOCK_AMOUNT_CACHE, String.valueOf(productId), number);
+        Long purchaseAmount = stockParam.getPurchaseAmount();
+        Double remainAmount = redisUtil.hdecr(STOCK_AMOUNT_CACHE, String.valueOf(productId), purchaseAmount);
         if (remainAmount < 0) {
-            redisUtil.hincr(STOCK_AMOUNT_CACHE, String.valueOf(productId), number);
+            redisUtil.hincr(STOCK_AMOUNT_CACHE, String.valueOf(productId), purchaseAmount);
             log.info("库存不足，操作回退");
             return false;
         } else {
