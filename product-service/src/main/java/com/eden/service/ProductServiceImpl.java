@@ -114,6 +114,7 @@ public class ProductServiceImpl implements IProductService {
     public boolean reduceStockAsync2(StockParam stockParam) {
         Long productId = stockParam.getProductId();
         if (!redisUtil.hHasKey(STOCK_AMOUNT_CACHE, String.valueOf(productId))) {
+            log.warn("库存为空");
             return false;
         }
 
@@ -121,7 +122,7 @@ public class ProductServiceImpl implements IProductService {
         Double remainAmount = redisUtil.hdecr(STOCK_AMOUNT_CACHE, String.valueOf(productId), purchaseAmount);
         if (remainAmount < 0) {
             redisUtil.hincr(STOCK_AMOUNT_CACHE, String.valueOf(productId), purchaseAmount);
-            log.info("库存不足，操作回退");
+            log.warn("库存不足，操作回退");
             return false;
         } else {
             // 异步库存扣减
