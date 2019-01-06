@@ -216,3 +216,17 @@
     </dependency>
     2、开启切面自动代理：@EnableAspectJAutoProxy
     3、定义切面：@Aspect、@PointCut、@Before、@After、@Around、@AfterReturning、@AfterThrowing
+
+## nacos 支持dubbo
+    1、引入依赖
+    <!-- Dubbo Nacos registry dependency -->
+    <dependency>
+        <groupId>com.alibaba</groupId>
+        <artifactId>dubbo-registry-nacos</artifactId>
+        <version>0.0.1</version>
+    </dependency>
+
+    2、属性设置
+        将注册中心地址由zookeeper 指向nacos
+        dubbo.registry.address = nacos://106.14.187.183:8848 #zookeeper://106.14.187.183:2181
+

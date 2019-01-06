@@ -13,8 +13,8 @@
         
         <!-- 数据库配置 -->
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://106.14.187.183:3306/eden?characterEncoding=utf8"
-                        userId="root" password="Slc13092271475@">
+                        connectionURL="jdbc:mysql://106.12.79.78:3306/eden?characterEncoding=utf8"
+                        userId="root" password="Asd09876%">
         </jdbcConnection>
         
         <javaTypeResolver>
@@ -39,6 +39,6 @@
         
  		<!-- 修改tableName、domainObjectName -->
         <!-- 设置启动命令：Run -> Edit Configurations -> + -> Maven -> Command line -> mybatis-generator:generate -e-->
- 		<table tableName="t_product" domainObjectName="TProduct" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
+ 		<table tableName="t_switch" domainObjectName="TSwitch" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
     </context>
 </generatorConfiguration>

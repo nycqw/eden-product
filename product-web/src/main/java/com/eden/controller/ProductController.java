@@ -8,9 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -28,9 +26,9 @@ public class ProductController {
     @Autowired
     private IProductService productService;
 
-    @RequestMapping("/query")
+    @GetMapping("/query/{productId}")
     @ResponseBody
-    public Result queryProductInfo(Long productId) {
+    public Result queryProductInfo2(@PathVariable(value = "productId") Long productId) {
         TProduct productInfo = productService.queryProductInfo(productId);
         return Result.success(productInfo);
     }

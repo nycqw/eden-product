@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.aop.support.AopUtils;
 
 import java.lang.reflect.Method;
 
@@ -13,7 +14,7 @@ import java.lang.reflect.Method;
  * @author chenqw
  * @since 2018/11/30
  */
-public class AopUtil {
+public class AopUtil extends org.springframework.aop.support.AopUtils {
 
     /**
      * 获取切入方法所在类名称

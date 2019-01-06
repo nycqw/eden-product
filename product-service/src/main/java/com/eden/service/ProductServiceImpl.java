@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.eden.aspect.lock.annotation.Lock;
 import com.eden.aspect.lock.handle.LockType;
+import com.eden.aspect.onoff.annotation.Switch;
 import com.eden.domain.request.StockParam;
 import com.eden.enums.MQConstants;
 import com.eden.mapper.TProductMapper;
@@ -51,13 +52,15 @@ public class ProductServiceImpl implements IProductService {
         }
     }
 
-    @Cacheable(value = PRODUCT_INFO_CACHE)
+    //@Cacheable(value = PRODUCT_INFO_CACHE)
     @Override
+    @Switch(switchType = "QUERY_PRODUCT_SWITCH")
     public TProduct queryProductInfo(Long productId) {
         return productMapper.selectByPrimaryKey(productId);
     }
 
     @Override
+    @Switch(switchType = "CREATE_PRODUCT_SWITCH")
     public void saveProductInfo(TProduct productInfo) {
         productMapper.insert(productInfo);
     }

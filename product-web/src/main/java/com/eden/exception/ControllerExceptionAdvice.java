@@ -37,4 +37,13 @@ public class ControllerExceptionAdvice {
         String message = "【" + error.getField() + "】" + error.getDefaultMessage();
         return Result.fail(ResultEnum.PARAM_ERROR.getCode(), message);
     }
+
+    /**
+     * 开关关闭异常
+     */
+    @ExceptionHandler(SwitchCloseException.class)
+    @ResponseBody
+    public Result switchCloseException(SwitchCloseException e) {
+        return Result.fail(ResultEnum.TRADE_ERROR.getCode(), e.getMessage());
+    }
 }

@@ -11,9 +11,9 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
       driver-class-name: com.mysql.jdbc.Driver
-      url: jdbc:mysql://106.14.187.183:3306/eden
+      url: jdbc:mysql://106.12.79.78:3306/eden
       username: root
-      password: Slc13092271475@
+      password: Asd09876%
   cache:
     type: redis
     redis:
@@ -21,7 +21,7 @@ spring:
       cache-null-values: false
   redis:
     database: 0
-    host: 106.14.187.183
+    host: 106.12.79.78
     port: 6379
     password:
     timeout: 10000
@@ -32,10 +32,10 @@ spring:
         max-idle: 5
         min-idle: 0
   rabbitmq:
-    host: 106.14.187.183
+    host: 106.12.79.78
     port: 5672
     username: root
-    password: 123456
+    password: Asd09876%
     publisher-confirms: true
     publisher-returns: true
     template:
@@ -59,7 +59,7 @@ dubbo:
     name: dubbo
     port: 20882
   registry:
-    address: zookeeper://106.14.187.183:2181
+    address: zookeeper://106.12.79.78:2181 #nacos://106.14.187.183:8848
   provider:
     timeout: 60000
     retries: 3
