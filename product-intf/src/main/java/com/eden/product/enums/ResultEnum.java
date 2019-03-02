@@ -1,4 +1,4 @@
-package com.eden.enums;
+package com.eden.product.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
